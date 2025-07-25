@@ -8,9 +8,20 @@ class Loss:
     """
     def loss(self, pred: np.ndarray, truth: np.ndarray) -> float:
         """
-        computes total loss for one forward pass
+        computes aggregated loss for one forward pass using sparse catigorical entropy loss
         """
-        raise NotImplementedError
+
+        predClipped = np.clip(pred, a_min = 10**(-15),a_max = 1 )
+        truthOneHot = np.zeros_like(pred)
+        truthOneHot[np.arange(len(truth)), truth.astype(int)] = 1
+
+        loss = -truthOneHot * np.log(predClipped)
+
+        totalLoss = np.sum(loss,axis = -1)   
+
+        aggregatedLoss = np.mean(totalLoss)
+        
+        return aggregatedLoss
         
     def gradLoss(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
         """
