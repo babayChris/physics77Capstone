@@ -23,18 +23,31 @@ class Linear(Layer):
         self.params['b'] = np.random.randn(output_size)
 
     def forward(self, inputs: np.ndarray) -> np.ndarray:
+        """
+        weight * input + bias
+        y = mx + b
+        """
         self.inputs = inputs
         return inputs @ self.params['w'] + self.params['b']
     
     def backward(self, gradient: np.ndarray) -> np.ndarray:
+        #TODO
         return
 
 class ActivationFunc(Layer):
-    def __init__(self, function: Callable[[np.ndarray], np.ndarray]]):
-        self.func = function
+    def __init__(self):
+        self.funcDict = {
+            "sigmoid" : self.sigmoid,
+            "relu" : self.relu,
+            "softmax" : self.softmax,
+            "leaky_relu" : self.leaky_relu,
+            "tanh" : self.tanh
+        }
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
-        return self.func(input)
+    def forward(self, input: np.ndarray, func: str) -> np.ndarray:
+        if func not in self.funcDict:
+            return KeyError
+        return self.funcDict[func](input)
 
     def sigmoid(self, input: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(input))
