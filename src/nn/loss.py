@@ -6,6 +6,10 @@ class Loss:
     loss takes in predicted (forward pass return value) and ground truth values and runs a loss function
 
     """
+
+    def __init__(self):
+        pass
+
     def loss(self, pred: np.ndarray, truth: np.ndarray) -> float:
         """
         computes aggregated loss for one forward pass using sparse catigorical entropy loss
