@@ -35,7 +35,6 @@ class Linear(Layer):
         return
 
 class ActivationFunc(Layer):
-<<<<<<< HEAD
     def __init__(self):
         self.funcDict = {
             "sigmoid" : self.sigmoid,
@@ -44,10 +43,9 @@ class ActivationFunc(Layer):
             "leaky_relu" : self.leaky_relu,
             "tanh" : self.tanh
         }
-=======
+        
     def __init__(self, function: Callable[[np.ndarray], np.ndarray]):
         self.func = function
->>>>>>> 0b02b581a4f59bf58aa6cff7df259d0fb5d5ba7b
 
     def forward(self, input: np.ndarray, func: str) -> np.ndarray:
         if func not in self.funcDict:
