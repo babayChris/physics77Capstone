@@ -30,7 +30,7 @@ class Linear(Layer):
         return
 
 class ActivationFunc(Layer):
-    def __init__(self, function: Callable[[np.ndarray], np.ndarray]]):
+    def __init__(self, function: Callable[[np.ndarray], np.ndarray]):
         self.func = function
 
     def forward(self, input: np.ndarray) -> np.ndarray:
