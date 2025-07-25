@@ -35,5 +35,21 @@ class ActivationFunc(Layer):
 
     def forward(self, input: np.ndarray) -> np.ndarray:
         return self.func(input)
-    
+
+    def sigmoid(self, input: np.ndarray) -> np.ndarray:
+        return 1 / (1 + np.exp(input))
+
+    def relu(self, input: np.ndarray) -> np.ndarray:
+        return np.max(0, input)
+
+    def softmax(self, input: np.ndarray) -> np.ndarray:
+        e_x = np.exp(input - np.max(input))
+        return e_x / sum(e_x, axis = 0)
+
+    def leaky_relu(self, input: np.ndarray, alpha = 0.01) -> np.ndarray: #only works for alpha<1
+        return np.max(alpha * input, input)
+
+    def tanh(self, input: np.ndarray) -> np.ndarray:
+        return np.tanh(input)
     #TODO: define activation functions
+    #update: Sigmoid, ReLu, softmax, leaky ReLu, tanh functions added
