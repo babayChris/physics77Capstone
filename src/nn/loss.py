@@ -21,7 +21,7 @@ class Loss:
 
         loss = -truthOneHot * np.log(predClipped)
 
-        totalLoss = np.sum(loss,axis = -1)   
+        totalLoss = np.sum(loss,axis = -1)
 
         aggregatedLoss = np.mean(totalLoss)
         
@@ -32,5 +32,20 @@ class Loss:
         calculates gradient tensor used in backward pass
         """
         raise NotImplementedError
-    
+
+    def mse(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
+        return np.mean((pred-truth) ** 2)
+
+    def mae(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
+        return np.mean(np.abs(pred-truth))
+
+    def binary_cross_entropy(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
+        prob = np.clop(pred, 1e-15, 1-1e-15)
+        return -np.mean(truth * np.log(prob) + (1 - truth) * np.log(1 - prob))
+
+    def categorical_cross_entropy(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
+        prob = np.clip(pred, 1e-15, 1)
+        return -np.mean(np.sum(truth * np.log(prob), axis=1))
+
 #TODO: impliment common Loss functions to test in network
+#update: 4 loss functions added
