@@ -30,7 +30,7 @@ class BatchIterator():
         batch_arr stores starting index for each batch in input ndarray
         for end index do starting index + batch_size
         """
-        batch_arr = np.arrange(0, len(inputs), self.batch_size)
+        batch_arr = np.arange(0, len(inputs), self.batch_size)
         if self.shuffle:
             np.random.shuffle(batch_arr)
 
