@@ -21,7 +21,9 @@ class Linear(Layer):
         #init with random parmas initally
         self.params['w'] = np.random.randn(input_size, output_size)
         self.params['b'] = np.random.randn(output_size)
-
+        self.grad = {'w' : None, 'b' : None}
+        self.inputs = None
+    
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         """
         weight * input + bias
@@ -31,8 +33,10 @@ class Linear(Layer):
         return inputs @ self.params['w'] + self.params['b']
     
     def backward(self, gradient: np.ndarray) -> np.ndarray:
-        #TODO
-        return
+        self.grad['w'] = self.inputs.T @ gradient #dL/dw
+        self.grad['b'] = np.sum(gradient, axis = 0) #dL/db
+        dx = gradient @ self.params['w'].T #dL/dx
+        return dx
 
 class ActivationFunc(Layer):
     def __init__(self):
