@@ -40,7 +40,7 @@ class Loss:
         return np.mean(np.abs(pred-truth))
 
     def binary_cross_entropy(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
-        prob = np.clop(pred, 1e-15, 1-1e-15)
+        prob = np.clip(pred, 1e-15, 1-1e-15)
         return -np.mean(truth * np.log(prob) + (1 - truth) * np.log(1 - prob))
 
     def categorical_cross_entropy(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
