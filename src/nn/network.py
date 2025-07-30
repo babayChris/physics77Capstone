@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from layer import Layer
 import numpy as np
 
@@ -11,6 +11,10 @@ class Network:
             inputs = layer.forward(inputs)
         return inputs
 
-    
-class SequentialNetwork():
-    
+    def backward(self, gradients: np.ndarray) -> np.ndarray:
+        """
+        goes through layers backwards 
+        """
+        for layer in reversed(self.layers): 
+            grad = layer.backward(grad)
+        return grad
