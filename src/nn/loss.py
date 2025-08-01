@@ -12,7 +12,7 @@ class Loss:
 
     def loss(self, pred: np.ndarray, truth: np.ndarray) -> float:
         """
-        computes aggregated loss for one forward pass using sparse catigorical entropy loss
+        computes aggregated loss for one forward pass using sparse catigorical cross entropy loss
         """
 
         predClipped = np.clip(pred, a_min = 10**(-15),a_max = 1 )
@@ -29,23 +29,9 @@ class Loss:
         
     def gradLoss(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
         """
-        calculates gradient tensor used in backward pass
+        calculates gradient of loss for sparse categorical cross entropy 
         """
-        raise NotImplementedError
-
-    def mse(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
-        return np.mean((pred-truth) ** 2)
-
-    def mae(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
-        return np.mean(np.abs(pred-truth))
-
-    def binary_cross_entropy(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
-        prob = np.clip(pred, 1e-15, 1-1e-15)
-        return -np.mean(truth * np.log(prob) + (1 - truth) * np.log(1 - prob))
-
-    def categorical_cross_entropy(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
-        prob = np.clip(pred, 1e-15, 1)
-        return -np.mean(np.sum(truth * np.log(prob), axis=1))
-
-#TODO: impliment common Loss functions to test in network
-#update: 4 loss functions added
+        truthOneHot = np.zeros_like(pred)
+        truthOneHot[np.arange(len(truth)), truth.astype(int)] = 1
+        
+        return (pred - truthOneHot)/ pred.shape[0]

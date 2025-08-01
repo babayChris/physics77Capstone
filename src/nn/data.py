@@ -4,17 +4,12 @@ from typing import NamedTuple, Iterator
 
 """
 
-input: [Temperature (K), Luminosity(L/Lo), Radius(R/Ro), Absolute magnitude(Mv), Star type, Star color]
+input: [Temperature (K), Luminosity(L/Lo), Radius(R/Ro), Absolute magnitude(Mv)]
 
 
 """
 
 Batch = NamedTuple("Batch", [("inputs", np.ndarray),("truth", np.ndarray)])
-
-class DataIterator():
-    def __call__(self, inputs: np.ndarray, outputs: np.ndarray) -> Iterator[Batch]:
-        raise NotImplementedError
-
 
 
 class BatchIterator():
@@ -30,12 +25,14 @@ class BatchIterator():
         batch_arr stores starting index for each batch in input ndarray
         for end index do starting index + batch_size
         """
-        batch_arr = np.arange(0, len(inputs), self.batch_size)
+        numSampes = len(inputs)
+        batch_start_index = np.arange(0, len(inputs), self.batch_size)
+        
         if self.shuffle:
-            np.random.shuffle(batch_arr)
+            np.random.shuffle(batch_start_index)
 
-        for batch in batch_arr:
-            end = batch + self.batch_size
-            input_batch = inputs[batch, end]
-            test_batch = truth[batch, end]
+        for batch in batch_start_index:
+            batch_end_index = batch + self.batch_size
+            input_batch = inputs[batch: batch_end_index]
+            test_batch = truth[batch: batch_end_index]
             yield Batch(input_batch, test_batch)

@@ -5,71 +5,70 @@ import numpy as np
 class Layer:
     def __init__(self) -> None:
         self.params: Dict[str, np.ndarray] = {} #constants in eqs
-        self.gradients: Dict[str, np.ndarray] = {}
+        #self.gradients: Dict[str, np.ndarray] = {}
 
-    def forward(self, inputs: np.ndarray):
-        raise NotImplementedError
     
-    def backward(self, inputs: np.ndarray):
-        raise NotImplementedError
-    
-
-
 class Linear(Layer):
     def __init__(self, input_size: int, output_size: int):
         super().__init__()
         #init with random parmas initally
         self.params['w'] = np.random.randn(input_size, output_size)
         self.params['b'] = np.random.randn(output_size)
-        self.grad = {'w' : None, 'b' : None}
-        self.inputs = None
+        self.grad: Dict[str, np.ndarray] = {
+            'w': np.zeros_like(self.params['w']), 
+            'b': np.zeros_like(self.params['b'])
+        }
+
     
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         """
         weight * input + bias
         y = mx + b
         """
-        self.inputs = inputs
         return inputs @ self.params['w'] + self.params['b']
     
-    def backward(self, gradient: np.ndarray) -> np.ndarray:
-        self.grad['w'] = self.inputs.T @ gradient #dL/dw
+    def backward(self, gradient: np.ndarray,backward_inputs: np.ndarray) -> np.ndarray:
+        self.grad['w'] = backward_inputs.T @ gradient #dL/dw
         self.grad['b'] = np.sum(gradient, axis = 0) #dL/db
         dx = gradient @ self.params['w'].T #dL/dx
         return dx
 
 class ActivationFunc(Layer):
-    def __init__(self):
+    def __init__(self, function_name: str):
+        super().__init__()
+        self.function_name = function_name
+        self.stored_input = None
+        
         self.funcDict = {
-            "sigmoid" : self.sigmoid,
             "relu" : self.relu,
             "softmax" : self.softmax,
-            "leaky_relu" : self.leaky_relu,
-            "tanh" : self.tanh
+        }
+
+        self.gradDict = {
+            "relu" : self.gradRelu,
+            "softmax" : self.gradSoftMax
         }
         
-    def __init__(self, function: Callable[[np.ndarray], np.ndarray]):
-        self.func = function
 
-    def forward(self, input: np.ndarray, func: str) -> np.ndarray:
-        if func not in self.funcDict:
-            return KeyError
-        return self.funcDict[func](input)
+    def forward(self, input: np.ndarray) -> np.ndarray:
+        self.stored_input = input
+        return self.funcDict[self.function_name](input)
 
-    def sigmoid(self, input: np.ndarray) -> np.ndarray:
-        return 1 / (1 + np.exp(input))
+    def backward(self, gradient: np.ndarray, inputs_for_backwards: np.ndarray) -> np.ndarray:
+        return self.gradDict[self.function_name](gradient, self.stored_input)
 
     def relu(self, input: np.ndarray) -> np.ndarray:
-        return np.max(0, input)
+        return np.maximum(0, input)
 
-    def softmax(self, input: np.ndarray) -> np.ndarray:
-        e_x = np.exp(input - np.max(input))
-        return e_x / sum(e_x, axis = 0)
+    def softmax(self, inputs: np.ndarray) -> np.ndarray:
+        e_x = np.exp(inputs - np.max(inputs, axis=-1, keepdims=True))        
+        return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
-    def leaky_relu(self, input: np.ndarray, alpha = 0.01) -> np.ndarray: #only works for alpha<1
-        return np.max(alpha * input, input)
+    def gradRelu(self, gradient: np.ndarray, stored_input: np.ndarray) -> np.ndarray:
+        gradRelu = (stored_input > 0).astype(float)
+        return gradient*gradRelu
 
-    def tanh(self, input: np.ndarray) -> np.ndarray:
-        return np.tanh(input)
-    #TODO: define activation functions
-    #update: Sigmoid, ReLu, softmax, leaky ReLu, tanh functions added
+
+    def gradSoftMax(self, gradient: np.ndarray, stored_input: np.ndarray) -> np.ndarray:
+        return gradient
+
