@@ -11,6 +11,7 @@ class Layer:
 class Linear(Layer):
     def __init__(self, input_size: int, output_size: int):
         super().__init__()
+        self.nodes = output_size
         #init with random parmas initally
         self.params['w'] = np.random.randn(input_size, output_size)
         self.params['b'] = np.random.randn(output_size)
@@ -33,6 +34,14 @@ class Linear(Layer):
         dx = gradient @ self.params['w'].T #dL/dx
         return dx
 
+    def get_nodes(self):
+        return self.nodes
+    
+    def load_weights(self, weights: np.ndarray, bias: np.ndarray):
+        self.params['w'] = weights
+        self.params['b'] = bias
+
+        
 class ActivationFunc(Layer):
     def __init__(self, function_name: str):
         super().__init__()
