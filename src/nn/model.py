@@ -49,7 +49,6 @@ class Model():
             print(f'Epoch: {epoch + 1}, Loss: {avg_loss:.4f}')
 
         print('Training completed!')
-
     def predict(self, inputs: np.ndarray) -> np.ndarray:
         return self.network.forward(inputs)
         
