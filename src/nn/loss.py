@@ -23,9 +23,6 @@ class Loss:
 
         
     def gradLoss(self, pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
-        """
-        calculates gradient of loss for sparse categorical cross entropy 
-        """
         sofmaxPred = np.exp(self.logSoftmax(pred))
         if truth.ndim > 1:
             truth = truth.flatten()
