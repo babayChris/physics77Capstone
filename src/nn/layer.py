@@ -14,8 +14,8 @@ class Layer:
 class Linear(Layer):
     def __init__(self, input_size: int, output_size: int):
         super().__init__()
-        # He-Normal distributition for initialization
-        self.params['w'] = np.random.normal(0, np.sqrt(2 / input_size), (input_size, output_size))
+        # Normal distributition for initialization (switched from He-normal to normal per instructer recomendation)
+        self.params['w'] = np.random.normal(0, 1, (input_size, output_size))
         self.params['b'] = np.zeros(output_size)
         
         self.grad: Dict[str, np.ndarray] = {
@@ -41,12 +41,10 @@ class ActivationFunc(Layer):
         
         self.funcDict = {
             "relu": self.relu,
-            "softmax": self.softmax,
         }
         
         self.gradDict = {
             "relu": self.gradRelu,
-            "softmax": self.gradSoftmax
         }
 
     def forward(self, input: np.ndarray) -> np.ndarray:
@@ -59,17 +57,9 @@ class ActivationFunc(Layer):
     def relu(self, input: np.ndarray) -> np.ndarray:
         return np.maximum(0, input)
 
-    def softmax(self, inputs: np.ndarray) -> np.ndarray:
-        shifted_inputs = inputs - np.max(inputs, axis=-1, keepdims=True)
-        exp_values = np.exp(shifted_inputs)
-        return exp_values / np.sum(exp_values, axis=-1, keepdims=True)
-
     def gradRelu(self, gradient: np.ndarray, stored_input: np.ndarray) -> np.ndarray:        
         return gradient * (stored_input > 0).astype(float)
 
-    def gradSoftmax(self, gradient: np.ndarray, stored_input: np.ndarray) -> np.ndarray:
-        return gradient
-        
 
 
 
